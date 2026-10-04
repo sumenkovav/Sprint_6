@@ -34,3 +34,6 @@ class OrderPageLocators:
     
     # Заголовок окна успешного заказа ("Заказ оформлен")
     SUCCESS_MESSAGE = (By.XPATH, "//*[contains(text(), 'Заказ оформлен')]")
+
+    # Выносим ШАБЛОН локатора. Переменная {day} будет подставлена позже. 
+    DATE_CELL_TEMPLATE = "//div[contains(@class, 'react-datepicker__day') and text()='{day}']"

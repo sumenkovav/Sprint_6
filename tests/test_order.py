@@ -28,10 +28,7 @@ class TestOrder:
         main_page.accept_cookies()
         
         # Шаг 2: Выбираем точку входа на основании параметров теста
-        if entry_point == "top":
-            main_page.click_header_order_button()
-        elif entry_point == "bottom":
-            main_page.click_bottom_order_button()
+        main_page.click_order_button(entry_point)
             
         # Шаг 3: Заполняем личные данные (Экран 1) - вызываем существующие методы по очереди 
         order_page.fill_name(name) 
@@ -45,10 +42,9 @@ class TestOrder:
         order_page.select_date(date) 
         order_page.select_rental_period(rent_time)
         # Выбор цвета (так как методов два, используем условие) 
-        if color == "black": order_page.select_color_black() 
-        elif color == "grey": order_page.select_color_grey()
+        order_page.select_color(color)
         # Заполнение комментария
-        if comment: order_page.fill_comment(comment)
+        order_page.fill_comment(comment)
         
         # Шаг 5: Подтверждаем заказ в поп-апе
         order_page.click_order()

@@ -1,11 +1,8 @@
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import TimeoutException
 import allure
 from locators.order_page_locators import OrderPageLocators
-import time
+
 
 
 class OrderPage(BasePage):
@@ -54,19 +51,18 @@ class OrderPage(BasePage):
 
     @allure.step("Выбрать дату '{day}' в календаре")
     def select_date(self, day):
-        """Выбирает дату, кликая по ячейке с числом через JS."""    
+        """Выбирает дату, кликая по ячейке с числом"""    
     # Открываем календарь
         self.click(self.locators.INPUT_DATE)    
     # Берем из даты только ДЕНЬ (число)
         day_number = day.split('.')[0].lstrip('0')    
-    # Ищем ячейку ТОЛЬКО по тексту (числу)
-        locator = (By.XPATH, f"//div[contains(@class, 'react-datepicker__day') and text()='{day_number}']")
-    # Ждем, пока ячейка появится
-        element = self.wait_element_to_be_visible(locator, timeout=15)
-    # КЛИК ЧЕРЕЗ JS (САМОЕ ВАЖНОЕ)
-        self.driver.execute_script("arguments[0].click();", element)
-    # 5. Пауза
-        time.sleep(1) 
+    # Используем шаблон из локаторов 
+    # Мы берем шаблон и форматируем его, получая готовый локатор 
+        xpath_string = self.locators.DATE_CELL_TEMPLATE.format(day=day_number) 
+        locator = (By.XPATH, xpath_string)
+    # Ждем и кликаем 
+        element = self.wait_element_to_be_clickable(locator, timeout=15) 
+        self.click(element)
 
     @allure.step("Выбрать срок аренды '{period}'")
     def select_rental_period(self, period):
@@ -75,15 +71,15 @@ class OrderPage(BasePage):
         locator = (self.locators.RENTAL_OPTION[0], self.locators.RENTAL_OPTION[1].format(period))
         self.click(locator)
 
-    @allure.step("Выбрать чёрный цвет самоката")
-    def select_color_black(self):
-        """Выбирает чёрный цвет самоката."""
-        self.click(self.locators.COLOR_BLACK)
-
-    @allure.step("Выбрать серый цвет самоката")
-    def select_color_grey(self):
-        """Выбирает серый цвет самоката."""
-        self.click(self.locators.COLOR_GREY)
+    @allure.step("Выбрать цвет самоката '{color}'")
+    def select_color(self, color):
+        """Выбирает цвет самоката. Принимает 'black' или 'grey'."""
+        if color == "black":
+            self.click(self.locators.COLOR_BLACK)
+        elif color == "grey":
+            self.click(self.locators.COLOR_GREY)
+        else:
+            raise ValueError(f"Неизвестный цвет: {color}") 
 
     @allure.step("Заполнить поле комментария текстом '{comment}'") 
     def fill_comment(self, comment): 
@@ -118,8 +114,3 @@ class OrderPage(BasePage):
     def is_success_displayed(self):
         """Проверяет, отображается ли сообщение об успешном заказе."""
         return self.is_element_visible(self.locators.SUCCESS_MESSAGE)
-
-    @allure.step("Кликнуть по логотипу Самоката")
-    def click_scooter_logo(self):
-        """Кликает по логотипу Самоката для перехода на главную страницу."""
-        self.click(self.locators.SCOOTER_LOGO)

@@ -2,6 +2,7 @@ import allure
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
@@ -76,4 +77,4 @@ class BasePage:
     @allure.step("Ожидаем, пока URL будет содержать текст: {text}")
     def wait_for_url_contains(self, text, time=10):
         WebDriverWait(self.driver, time).until(EC.url_contains(text))
-        
+       
